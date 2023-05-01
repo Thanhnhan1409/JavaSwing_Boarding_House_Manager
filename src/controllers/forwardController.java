@@ -81,12 +81,24 @@ public class forwardController {
                 }
                 case "Transaction":
                 {
+                try {
                     node = new TransactionPanel();
+                } catch (ClassNotFoundException ex) {
+                    Logger.getLogger(forwardController.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (SQLException ex) {
+                    Logger.getLogger(forwardController.class.getName()).log(Level.SEVERE, null, ex);
+                }
                     break;
                 }
                 case "Customer":
                 {
+                try {
                     node = new CustomersPanel();
+                } catch (ClassNotFoundException ex) {
+                    Logger.getLogger(forwardController.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (SQLException ex) {
+                    Logger.getLogger(forwardController.class.getName()).log(Level.SEVERE, null, ex);
+                }
                     break;
                 }
                 case "Rom":

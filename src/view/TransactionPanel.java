@@ -4,6 +4,17 @@
  */
 package view;
 
+import java.sql.Connection;
+import java.sql.Statement;
+import java.sql.SQLException;
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
+import javax.swing.table.DefaultTableModel;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author PC
@@ -13,8 +24,17 @@ public class TransactionPanel extends javax.swing.JPanel {
     /**
      * Creates new form transaction
      */
-    public TransactionPanel() {
+    Connection con;
+    Statement stmt = null;
+    private final DefaultTableModel tableModel;
+    public TransactionPanel() throws ClassNotFoundException, SQLException {
         initComponents();
+        Class.forName("com.mysql.jdbc.Driver");
+        String url = "jdbc:mysql://localhost:3306/boardinghousemanager?useSSL=false";
+        con = DriverManager.getConnection(url, "root", "140903");
+        stmt =  con.createStatement();
+        tableModel = (DefaultTableModel) jTable1.getModel();
+        jpnAdd.setVisible(false);
     }
 
     /**
@@ -26,30 +46,417 @@ public class TransactionPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jPanel1 = new javax.swing.JPanel();
+        jLabel2 = new javax.swing.JLabel();
+        jPanel2 = new javax.swing.JPanel();
+        jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
+        jPanel3 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
+        jpnAdd = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
+        jtfRoom = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        jtfPrice = new javax.swing.JTextField();
+        jLabel4 = new javax.swing.JLabel();
+        jtfDate = new javax.swing.JTextField();
+        jButton4 = new javax.swing.JButton();
 
-        jLabel1.setText("giao dichj");
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel2.setText("Danh sách giao dịch");
+
+        jButton1.setText("Thêm giao dịch");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        jButton2.setText("Cập nhật");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
+        jButton3.setText("Xem thông tin");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(44, 44, 44)
+                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(33, 33, 33)
+                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap(18, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton2)
+                    .addComponent(jButton1)
+                    .addComponent(jButton3))
+                .addGap(10, 10, 10))
+        );
+
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
+            },
+            new String [] {
+                "Mã giao dịch", "Phòng", "Số tiền trả", "Số tiền nợ", "Ngày "
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.Integer.class, java.lang.String.class, java.lang.Double.class, java.lang.Double.class, java.lang.String.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, true, true, false, true
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane1.setViewportView(jTable1);
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane1)
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 249, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jLabel1.setText("Phòng");
+
+        jLabel3.setText("Số tiền");
+
+        jLabel4.setText("Ngày");
+
+        jButton4.setBackground(new java.awt.Color(0, 153, 0));
+        jButton4.setForeground(new java.awt.Color(255, 255, 255));
+        jButton4.setText("Thêm");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jpnAddLayout = new javax.swing.GroupLayout(jpnAdd);
+        jpnAdd.setLayout(jpnAddLayout);
+        jpnAddLayout.setHorizontalGroup(
+            jpnAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jpnAddLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jpnAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jtfRoom, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1))
+                .addGap(47, 47, 47)
+                .addGroup(jpnAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel3)
+                    .addComponent(jtfPrice, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(41, 41, 41)
+                .addGroup(jpnAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel4)
+                    .addGroup(jpnAddLayout.createSequentialGroup()
+                        .addComponent(jtfDate, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, 96, Short.MAX_VALUE)))
+                .addContainerGap())
+        );
+        jpnAddLayout.setVerticalGroup(
+            jpnAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jpnAddLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jpnAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(jLabel3)
+                    .addComponent(jLabel4))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jpnAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jtfRoom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jtfPrice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jtfDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton4))
+                .addContainerGap(11, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 497, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(57, 57, 57))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(10, 10, 10)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap())))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jpnAdd, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jpnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(63, Short.MAX_VALUE))
+        );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(108, 108, 108)
-                .addComponent(jLabel1)
-                .addContainerGap(240, Short.MAX_VALUE))
+                .addContainerGap()
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(134, 134, 134)
-                .addComponent(jLabel1)
-                .addContainerGap(150, Short.MAX_VALUE))
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // TODO add your handling code here:
+        try{
+            jpnAdd.setVisible(false);
+            String sql = null;
+            
+            sql = "SELECT * FROM Transaction";
+            
+
+            PreparedStatement pstmt = con.prepareStatement(sql);
+            
+
+            ResultSet rs = pstmt.executeQuery();
+
+            // clear table before adding rows
+            tableModel.setRowCount(0);
+
+            while (rs.next()) {
+                Object[] row = new Object[5];
+                row[0] = rs.getString("id_transaction");
+                row[1] = rs.getString("id_rom");
+                row[2] = rs.getDouble("amountPaid");
+                row[3] = rs.getDouble("amountOwed");
+                row[4] = rs.getString("paymentDate");
+                tableModel.addRow(row);
+            }
+        } catch (SQLException ex) {
+            java.util.logging.Logger.getLogger(RomsPanel.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        jpnAdd.setVisible(true);
+        
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        // TODO add your handling code here:
+        try{
+            String rom = jtfRoom.getText();
+            String amount = jtfPrice.getText();
+            String date = jtfDate.getText();
+            
+            
+            
+            String sql2 = "SELECT price FROM rom where id =?";
+            PreparedStatement pstmt = null;
+            pstmt = con.prepareStatement(sql2);
+            pstmt.setString(1, rom);
+            
+            ResultSet rs = pstmt.executeQuery();
+            String price = null;
+            if (rs.next()) {
+                price = rs.getString("price");
+                
+            }
+            String sql = "INSERT INTO Transaction (id_rom, amountPaid, amountOwed, paymentDate) Value (?,?,?,?)";
+            
+            pstmt = con.prepareStatement(sql);
+            
+            double amountOwed = Double.parseDouble(price) - Double.parseDouble(amount ) ;
+            
+            Double obj = Double.valueOf(amountOwed);
+            String owed = obj.toString();
+                    
+            pstmt.setString(1, rom);
+            pstmt.setString(2, amount);
+            pstmt.setString(3, owed);
+            pstmt.setString(4, date);
+            
+            int rowsUpdated = pstmt.executeUpdate();
+            if (rowsUpdated > 0) {
+                JOptionPane.showMessageDialog(this, "Thêm khách hàng thành công!");
+            } else {
+                JOptionPane.showMessageDialog(this, "Thêm khách hàng thất bại!");
+            }
+            
+            
+            
+            sql = "SELECT * FROM Transaction";
+            pstmt = con.prepareStatement(sql);
+            
+            rs = pstmt.executeQuery();
+
+            // clear table before adding rows
+            tableModel.setRowCount(0);
+
+             while (rs.next()) {
+                Object[] row = new Object[5];
+                row[0] = rs.getString("id_transaction");
+                row[1] = rs.getString("id_rom");
+                row[2] = rs.getDouble("amountPaid");
+                row[3] = rs.getDouble("amountOwed");
+                row[4] = rs.getString("paymentDate");
+                tableModel.addRow(row);
+            }
+            
+        } catch(SQLException ex){
+            java.util.logging.Logger.getLogger(RomsPanel.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
+        }
+    }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+        jpnAdd.setVisible(false);
+        int rowIndex = jTable1.getSelectedRow();
+
+        // Nếu không có hàng nào được chọn, hiển thị thông báo lỗi
+        if (rowIndex == -1) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn một hàng để cập nhật!");
+            return;
+        }
+        
+       
+
+        // Cập nhật giá trị trong database
+        try {
+            
+            
+
+            // Lấy giá trị từ JTable và gán vào các biến tương ứng
+            String id_transaction = jTable1.getValueAt(rowIndex, 0).toString();
+            String room = jTable1.getValueAt(rowIndex, 1).toString();
+            
+            String sql2 = "SELECT price FROM rom where id =?";
+            PreparedStatement pstmt = null;
+            pstmt = con.prepareStatement(sql2);
+            pstmt.setString(1, room);
+            String amountpaid = jTable1.getValueAt(rowIndex, 2).toString();
+//            String amountOwed = jTable1.getValueAt(rowIndex, 3).toString();
+            String date = jTable1.getValueAt(rowIndex, 4).toString();
+            
+            ResultSet rs = pstmt.executeQuery();
+            String price = null;
+            if (rs.next()) {
+                price = rs.getString("price");
+                
+            }
+            
+            double amountOwed = Double.parseDouble(price) - Double.parseDouble(amountpaid ) ;
+            
+            Double obj = Double.valueOf(amountOwed);
+            String owed = obj.toString();
+            
+            
+            
+            String sql = "UPDATE Transaction SET id_rom=?, amountPaid =? , amountOwed=?, paymentDate =?  WHERE id_transaction=?";
+            PreparedStatement statement = con.prepareStatement(sql);
+            statement.setString(1, room);
+            statement.setString(2, amountpaid);
+            statement.setString(3, owed);
+            statement.setString(4, date);
+            statement.setString(5, id_transaction);
+            int rowsUpdated = statement.executeUpdate();
+            if (rowsUpdated > 0) {
+                JOptionPane.showMessageDialog(this, "Cập nhật thành công!");
+            } else {
+                JOptionPane.showMessageDialog(this, "Không tìm thấy giao dịch có id = " + id_transaction);
+            }
+            sql = "SELECT * FROM Transaction";
+            pstmt = con.prepareStatement(sql);
+            rs = pstmt.executeQuery();
+
+            // clear table before adding rows
+            tableModel.setRowCount(0);
+
+            while (rs.next()) {
+                Object[] row = new Object[5];
+                row[0] = rs.getString("id_transaction");
+                row[1] = rs.getString("id_rom");
+                row[2] = rs.getDouble("amountPaid");
+                row[3] = rs.getDouble("amountOwed");
+                row[4] = rs.getString("paymentDate");
+                tableModel.addRow(row);
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Lỗi: " + ex.getMessage());
+        }
+    }//GEN-LAST:event_jButton2ActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable jTable1;
+    private javax.swing.JPanel jpnAdd;
+    private javax.swing.JTextField jtfDate;
+    private javax.swing.JTextField jtfPrice;
+    private javax.swing.JTextField jtfRoom;
     // End of variables declaration//GEN-END:variables
 }
