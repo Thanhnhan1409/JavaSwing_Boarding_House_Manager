@@ -76,7 +76,7 @@ public class StatisticalPanel extends javax.swing.JPanel {
         jlbTransaction.setText(String.valueOf(countTransaction));
         
         
-        sql = "SELECT sum(amountPaid), sum(amountOwed) FROM Transaction ";
+        sql = "SELECT sum(amountPaid) FROM Transaction ";
         pstmt = con.prepareStatement(sql);
         
         rs = pstmt.executeQuery();
@@ -85,8 +85,30 @@ public class StatisticalPanel extends javax.swing.JPanel {
         double amountOwed =0;
         if(rs.next()){
             amountPaid = rs.getDouble(1);
-            amountOwed = rs.getDouble(2);
         }
+        
+        sql = "SELECT SUM(amountOwed) as total_amount\n" +
+                "FROM transaction t1\n" +
+                "WHERE paymentDate = (\n" +
+                "  SELECT MAX(paymentDate)\n" +
+                "  FROM transaction t2\n" +
+                "  WHERE t1.id_rom = t2.id_rom\n" +
+                ")";
+
+        // Tạo một PreparedStatement để thực hiện câu truy vấn
+        PreparedStatement statement = con.prepareStatement(sql);
+
+        // Thực hiện câu truy vấn và lấy kết quả trả về
+        ResultSet resultSet = statement.executeQuery();
+
+        // Khởi tạo biến tổng
+        
+
+        // Duyệt qua từng hàng trong bảng và cộng dồn giá trị của cột amount vào biến tổng
+        if (resultSet.next()) {
+            amountOwed = resultSet.getDouble("total_amount");
+        }
+        
         jlbAmountPaid.setText(String.valueOf(amountPaid));
         jlbAmountOwed.setText(String.valueOf(amountOwed));
         
@@ -181,14 +203,14 @@ public class StatisticalPanel extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jlbTransaction, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel2))
-                        .addGap(45, 45, 45)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 98, Short.MAX_VALUE))
+                        .addGap(31, 31, 31)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jlbRoomTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jlbCustomers, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 104, Short.MAX_VALUE)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)

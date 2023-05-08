@@ -35,6 +35,17 @@ public class TransactionPanel extends javax.swing.JPanel {
         stmt =  con.createStatement();
         tableModel = (DefaultTableModel) jTable1.getModel();
         jpnAdd.setVisible(false);
+        
+        String sql = "SELECT id FROM rom ";
+        PreparedStatement pstmt = con.prepareStatement(sql);
+            
+        ResultSet rs = pstmt.executeQuery();
+
+            // clear table before adding rows
+        while (rs.next()) {
+            String rom = rs.getString("id");
+            jtfRoom.addItem(rom);
+        }
     }
 
     /**
@@ -50,19 +61,18 @@ public class TransactionPanel extends javax.swing.JPanel {
         jLabel2 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         jpnAdd = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        jtfRoom = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         jtfPrice = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         jtfDate = new javax.swing.JTextField();
         jButton4 = new javax.swing.JButton();
+        jtfRoom = new javax.swing.JComboBox<>();
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -72,13 +82,6 @@ public class TransactionPanel extends javax.swing.JPanel {
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
-            }
-        });
-
-        jButton2.setText("Cập nhật");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
             }
         });
 
@@ -96,18 +99,15 @@ public class TransactionPanel extends javax.swing.JPanel {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(44, 44, 44)
+                .addGap(50, 50, 50)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(33, 33, 33)
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18))
+                .addGap(22, 22, 22))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap(18, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton2)
                     .addComponent(jButton1)
                     .addComponent(jButton3))
                 .addGap(10, 10, 10))
@@ -177,9 +177,9 @@ public class TransactionPanel extends javax.swing.JPanel {
             .addGroup(jpnAddLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jpnAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jtfRoom, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1))
-                .addGap(47, 47, 47)
+                    .addComponent(jLabel1)
+                    .addComponent(jtfRoom, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(26, 26, 26)
                 .addGroup(jpnAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel3)
                     .addComponent(jtfPrice, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -202,10 +202,10 @@ public class TransactionPanel extends javax.swing.JPanel {
                     .addComponent(jLabel4))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jpnAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jtfRoom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jtfPrice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jtfDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton4))
+                    .addComponent(jButton4)
+                    .addComponent(jtfRoom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(11, Short.MAX_VALUE))
         );
 
@@ -297,24 +297,35 @@ public class TransactionPanel extends javax.swing.JPanel {
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         // TODO add your handling code here:
         try{
-            String rom = jtfRoom.getText();
+            String rom = (String) jtfRoom.getSelectedItem();
             String amount = jtfPrice.getText();
             String date = jtfDate.getText();
             
             
-            
-            String sql2 = "SELECT price FROM rom where id =?";
-            PreparedStatement pstmt = null;
-            pstmt = con.prepareStatement(sql2);
+            String sql = "SELECT amountOwed FROM transaction WHERE id_rom = ? ORDER BY paymentDate DESC LIMIT 1";
+            PreparedStatement pstmt = con.prepareStatement(sql);
             pstmt.setString(1, rom);
-            
             ResultSet rs = pstmt.executeQuery();
-            String price = null;
+
+            // Kiểm tra kết quả trả về từ câu truy vấn
+            String price = "";
             if (rs.next()) {
-                price = rs.getString("price");
+                // Nếu có giá trị thì lấy giá trị của cột no
+                price = rs.getString("amountOwed");
+
+            } else {
+                String sql2 = "SELECT price FROM rom where id =?";
+                pstmt = con.prepareStatement(sql2);
+                pstmt.setString(1, rom);
+            
+                rs = pstmt.executeQuery();
+                if (rs.next()) {
+                    price = rs.getString("price");
                 
+                }
             }
-            String sql = "INSERT INTO Transaction (id_rom, amountPaid, amountOwed, paymentDate) Value (?,?,?,?)";
+            
+            sql = "INSERT INTO Transaction (id_rom, amountPaid, amountOwed, paymentDate) Value (?,?,?,?)";
             
             pstmt = con.prepareStatement(sql);
             
@@ -330,9 +341,9 @@ public class TransactionPanel extends javax.swing.JPanel {
             
             int rowsUpdated = pstmt.executeUpdate();
             if (rowsUpdated > 0) {
-                JOptionPane.showMessageDialog(this, "Thêm khách hàng thành công!");
+                JOptionPane.showMessageDialog(this, "Thêm giao dịch thành công!");
             } else {
-                JOptionPane.showMessageDialog(this, "Thêm khách hàng thất bại!");
+                JOptionPane.showMessageDialog(this, "Thêm giao dịch thất bại!");
             }
             
             
@@ -361,88 +372,9 @@ public class TransactionPanel extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_jButton4ActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
-        jpnAdd.setVisible(false);
-        int rowIndex = jTable1.getSelectedRow();
-
-        // Nếu không có hàng nào được chọn, hiển thị thông báo lỗi
-        if (rowIndex == -1) {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn một hàng để cập nhật!");
-            return;
-        }
-        
-       
-
-        // Cập nhật giá trị trong database
-        try {
-            
-            
-
-            // Lấy giá trị từ JTable và gán vào các biến tương ứng
-            String id_transaction = jTable1.getValueAt(rowIndex, 0).toString();
-            String room = jTable1.getValueAt(rowIndex, 1).toString();
-            
-            String sql2 = "SELECT price FROM rom where id =?";
-            PreparedStatement pstmt = null;
-            pstmt = con.prepareStatement(sql2);
-            pstmt.setString(1, room);
-            String amountpaid = jTable1.getValueAt(rowIndex, 2).toString();
-//            String amountOwed = jTable1.getValueAt(rowIndex, 3).toString();
-            String date = jTable1.getValueAt(rowIndex, 4).toString();
-            
-            ResultSet rs = pstmt.executeQuery();
-            String price = null;
-            if (rs.next()) {
-                price = rs.getString("price");
-                
-            }
-            
-            double amountOwed = Double.parseDouble(price) - Double.parseDouble(amountpaid ) ;
-            
-            Double obj = Double.valueOf(amountOwed);
-            String owed = obj.toString();
-            
-            
-            
-            String sql = "UPDATE Transaction SET id_rom=?, amountPaid =? , amountOwed=?, paymentDate =?  WHERE id_transaction=?";
-            PreparedStatement statement = con.prepareStatement(sql);
-            statement.setString(1, room);
-            statement.setString(2, amountpaid);
-            statement.setString(3, owed);
-            statement.setString(4, date);
-            statement.setString(5, id_transaction);
-            int rowsUpdated = statement.executeUpdate();
-            if (rowsUpdated > 0) {
-                JOptionPane.showMessageDialog(this, "Cập nhật thành công!");
-            } else {
-                JOptionPane.showMessageDialog(this, "Không tìm thấy giao dịch có id = " + id_transaction);
-            }
-            sql = "SELECT * FROM Transaction";
-            pstmt = con.prepareStatement(sql);
-            rs = pstmt.executeQuery();
-
-            // clear table before adding rows
-            tableModel.setRowCount(0);
-
-            while (rs.next()) {
-                Object[] row = new Object[5];
-                row[0] = rs.getString("id_transaction");
-                row[1] = rs.getString("id_rom");
-                row[2] = rs.getDouble("amountPaid");
-                row[3] = rs.getDouble("amountOwed");
-                row[4] = rs.getString("paymentDate");
-                tableModel.addRow(row);
-            }
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Lỗi: " + ex.getMessage());
-        }
-    }//GEN-LAST:event_jButton2ActionPerformed
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel1;
@@ -457,6 +389,6 @@ public class TransactionPanel extends javax.swing.JPanel {
     private javax.swing.JPanel jpnAdd;
     private javax.swing.JTextField jtfDate;
     private javax.swing.JTextField jtfPrice;
-    private javax.swing.JTextField jtfRoom;
+    private javax.swing.JComboBox<String> jtfRoom;
     // End of variables declaration//GEN-END:variables
 }
