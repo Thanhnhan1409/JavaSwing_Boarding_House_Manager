@@ -26,7 +26,7 @@ public class MainJFrame extends javax.swing.JFrame {
         controller.setView(jpnRom, jlbRom);
         
         List<listBean> listItem = new ArrayList<>();
-            listItem.add(new listBean("Rom",jpnRom, jlbRom));
+            listItem.add(new listBean("Room",jpnRom, jlbRom));
             listItem.add(new listBean("Statistical",jpnStatistical, jlbStatistical));
             listItem.add(new listBean("Customer",jpnCustomer, jlbCustomer));
             listItem.add(new listBean("Transaction",jpnTransaction, jlbTransaction));

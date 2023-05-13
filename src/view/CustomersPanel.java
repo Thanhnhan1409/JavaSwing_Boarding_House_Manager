@@ -35,11 +35,12 @@ public class CustomersPanel extends javax.swing.JPanel {
         initComponents();
 //        tableList.setVisible(false);
         Class.forName("com.mysql.jdbc.Driver");
-        String url = "jdbc:mysql://localhost:3306/boardinghousemanager?useSSL=false";
+        String url = "jdbc:mysql://localhost:3306/javaBaitapNhom?useSSL=false";
         con = DriverManager.getConnection(url,"root","140903");
         stmt = con.createStatement();
         tableModel = (DefaultTableModel) jTable1.getModel();
         inforDetail.setVisible(false);
+        
     }
 
     
@@ -492,36 +493,33 @@ public class CustomersPanel extends javax.swing.JPanel {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        try{
+        try {
             inforDetail.setVisible(false);
             tableList.setVisible(true);
-            String sql = null;
-            if (jtfFindName.getText().isBlank()) {
-                sql = "SELECT * FROM Customers";
-            } else {
-                sql = "SELECT * FROM Customers WHERE name LIKE ?";
+            String sql = "SELECT * FROM Customers";
+            if (!jtfFindName.getText().isBlank()) {
+                sql += " WHERE name LIKE ?";
             }
-
             PreparedStatement pstmt = con.prepareStatement(sql);
             if (!jtfFindName.getText().isBlank()) {
-                 pstmt.setString(1, "%" + jtfFindName.getText() + "%");
+                pstmt.setString(1, "%" + jtfFindName.getText() + "%");
             }
-
             ResultSet rs = pstmt.executeQuery();
-
-            // clear table before adding rows
-            tableModel.setRowCount(0);
-
+            tableModel.setRowCount(0); // clear table before adding rows
             while (rs.next()) {
                 Object[] row = new Object[4];
                 row[0] = rs.getInt("id_customer");
                 row[1] = rs.getString("name");
-                row[2] = rs.getString("rom");
+                row[2] = rs.getString("room");
                 row[3] = rs.getLong("number");
                 tableModel.addRow(row);
+                
+                
             }
+            
+            
         } catch (SQLException ex) {
-            Logger.getLogger(RomsPanel.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(RoomsPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -566,7 +564,7 @@ public class CustomersPanel extends javax.swing.JPanel {
             String email = jtfEmail.getText();
             
             
-            String sql = "INSERT INTO Customers (name, address, ngay_sinh, number, email,rom, startDate, endDate) VALUE (?,?,?,?,?,?,?,?)";
+            String sql = "INSERT INTO Customers (name, address, ngay_sinh, number, email,room, startDate, endDate) VALUE (?,?,?,?,?,?,?,?)";
 
             PreparedStatement pstmt = con.prepareStatement(sql);
             pstmt.setString(1, name);
@@ -600,18 +598,23 @@ public class CustomersPanel extends javax.swing.JPanel {
                 Object[] row = new Object[4];
                 row[0] = rs.getInt("id_customer");
                 row[1] = rs.getString("name");
-                row[2] = rs.getString("rom");
+                row[2] = rs.getString("room");
                 row[3] = rs.getLong("number");
                 tableModel.addRow(row);
             }
             
-            sql = "UPDATE rom SET status = IF(EXISTS(SELECT * FROM Customers WHERE rom = ?), 'hết', 'còn')  WHERE id = ?";
+            sql = "UPDATE rooms " +
+                   "SET status = IF(NOT EXISTS(SELECT * FROM customers WHERE room = ?), 'Còn', " +
+                   "               IF((SELECT MAX(endDate) FROM customers WHERE room = ? AND endDate IS NOT NULL) <= NOW(), 'Còn', 'Hết')) " +
+                   "WHERE id_room = ?";
             pstmt = con.prepareStatement(sql);
             pstmt.setString(1, room);
             pstmt.setString(2, room);
+            pstmt.setString(3, room);
+
             pstmt.executeUpdate();
         } catch (SQLException ex) {
-            Logger.getLogger(RomsPanel.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(RoomsPanel.class.getName()).log(Level.SEVERE, null, ex);
         
         }
     }//GEN-LAST:event_bttAddCustomerActionPerformed
@@ -651,12 +654,13 @@ public class CustomersPanel extends javax.swing.JPanel {
             tableList.setVisible(false);
             inforDetail.setVisible(true);
             btUpdateCustomer.setVisible(true);
+            btDeleteCustomer.setVisible(true);
             
             if(rs.next()) { // kiểm tra xem ResultSet rs có chứa bản ghi hay không
             jtfIdCustomer.setText(String.valueOf(rs.getString("id_customer")));
             jtfName.setText(String.valueOf(rs.getString("name")));
             jtfBirth.setText(String.valueOf(rs.getString("ngay_sinh")));
-            jtfRoom.setText(String.valueOf(rs.getString("rom")));
+            jtfRoom.setText(String.valueOf(rs.getString("room")));
             jtfAddress.setText(String.valueOf(rs.getString("address")));
             jtfStartTime.setText(String.valueOf(rs.getString("startDate")));
             jtfEndTime.setText(String.valueOf(rs.getString("endDate")));
@@ -668,7 +672,7 @@ public class CustomersPanel extends javax.swing.JPanel {
         }
             
         } catch (SQLException ex) {
-            Logger.getLogger(RomsPanel.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(RoomsPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jButton5ActionPerformed
 
@@ -709,7 +713,7 @@ public class CustomersPanel extends javax.swing.JPanel {
             jtfIdCustomer.setText(String.valueOf(rs.getString("id_customer")));
             jtfName.setText(String.valueOf(rs.getString("name")));
             jtfBirth.setText(String.valueOf(rs.getString("ngay_sinh")));
-            jtfRoom.setText(String.valueOf(rs.getString("rom")));
+            jtfRoom.setText(String.valueOf(rs.getString("room")));
             jtfAddress.setText(String.valueOf(rs.getString("address")));
             jtfStartTime.setText(String.valueOf(rs.getString("startDate")));
             jtfEndTime.setText(String.valueOf(rs.getString("endDate")));
@@ -724,7 +728,7 @@ public class CustomersPanel extends javax.swing.JPanel {
         }
             
         } catch (SQLException ex) {
-            Logger.getLogger(RomsPanel.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(RoomsPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jButton3ActionPerformed
 
@@ -741,7 +745,7 @@ public class CustomersPanel extends javax.swing.JPanel {
             String email = jtfEmail.getText();
             String number = jtfNumber.getText();
             
-            String sql= "UPDATE Customers SET name=?, address =?, ngay_sinh =? ,number=?,email=?,  rom=?,  startDate=?, endDate=? WHERE id_customer=?";
+            String sql= "UPDATE Customers SET name=?, address =?, ngay_sinh =? ,number=?,email=?,  room=?,  startDate=?, endDate=? WHERE id_customer=?";
             PreparedStatement pstmt = con.prepareStatement(sql);
             pstmt.setString(9, id_customer);
             pstmt.setString(1, name);
@@ -774,18 +778,23 @@ public class CustomersPanel extends javax.swing.JPanel {
                 Object[] row = new Object[4];
                 row[0] = rs.getString("id_customer");
                 row[1] = rs.getString("name");
-                row[2] = rs.getString("rom");
+                row[2] = rs.getString("room");
                 row[3] = rs.getLong("number");
                 tableModel.addRow(row);
             }
             
-            sql = "UPDATE rom SET status = IF(EXISTS(SELECT * FROM Customers WHERE rom = ?), 'hết', 'còn')  WHERE id = ?";
+            sql = "UPDATE rooms " +
+                   "SET status = IF(NOT EXISTS(SELECT * FROM customers WHERE room = ?), 'Còn', " +
+                   "               IF((SELECT MAX(endDate) FROM customers WHERE room = ? AND endDate IS NOT NULL) <= NOW(), 'Còn', 'Hết')) " +
+                   "WHERE id_room = ?";
             pstmt = con.prepareStatement(sql);
             pstmt.setString(1, room);
             pstmt.setString(2, room);
+            pstmt.setString(3, room);
+
             pstmt.executeUpdate();
         } catch(SQLException ex) {
-            Logger.getLogger(RomsPanel.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(RoomsPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btUpdateCustomerActionPerformed
 
@@ -797,7 +806,7 @@ public class CustomersPanel extends javax.swing.JPanel {
             String sql= "DELETE FROM Customers where id_customer = ? ";
             
                        
-            String sql2 = "SELECT id_rom FROM rom WHERE id_customer=? ";
+            String sql2 = "SELECT id_room FROM rooms WHERE id_customer=? ";
             PreparedStatement pstmt = con.prepareStatement(sql2);
             pstmt.setString(1, id_customer);
             ResultSet rs = pstmt.executeQuery();
@@ -807,7 +816,7 @@ public class CustomersPanel extends javax.swing.JPanel {
             
             String idRoom = null;
             if(rs.next()){
-                 idRoom = rs.getString("id_rom");
+                 idRoom = rs.getString("id_room");
             }
             
             int rowsUpdated = pstmt.executeUpdate();
@@ -830,19 +839,24 @@ public class CustomersPanel extends javax.swing.JPanel {
                 Object[] row = new Object[4];
                 row[0] = rs.getString("id_customer");
                 row[1] = rs.getString("name");
-                row[2] = rs.getString("rom");
+                row[2] = rs.getString("room");
                 row[3] = rs.getLong("number");
                 tableModel.addRow(row);
             }
             
-            sql = "UPDATE rom SET status = IF(EXISTS(SELECT * FROM Customers WHERE rom = ?), 'hết', 'còn')  WHERE id = ?";
+            sql = "UPDATE rooms " +
+                   "SET status = IF(NOT EXISTS(SELECT * FROM customers WHERE room = ?), 'Còn', " +
+                   "               IF((SELECT MAX(endDate) FROM customers WHERE room = ? AND endDate IS NOT NULL) <= NOW(), 'Còn', 'Hết')) " +
+                   "WHERE id_room = ?";
             pstmt = con.prepareStatement(sql);
             pstmt.setString(1, idRoom);
             pstmt.setString(2, idRoom);
+            pstmt.setString(3, idRoom);
+
             pstmt.executeUpdate();
             
         }catch(SQLException ex) {
-            Logger.getLogger(RomsPanel.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(RoomsPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btDeleteCustomerActionPerformed
 
@@ -866,13 +880,13 @@ public class CustomersPanel extends javax.swing.JPanel {
 
             String sql = "DELETE FROM Customers where id_customer = ?";
 
-            String sql2 = "SELECT rom FROM customers WHERE id_customer=? ";
+            String sql2 = "SELECT room FROM customers WHERE id_customer=? ";
             PreparedStatement pstmt = con.prepareStatement(sql2);
             pstmt.setString(1, id);
             ResultSet rs = pstmt.executeQuery();
             String idRoom = null;
             if(rs.next()){
-                 idRoom = rs.getString("rom");
+                 idRoom = rs.getString("room");
             }
             
             pstmt = con.prepareStatement(sql);
@@ -895,12 +909,12 @@ public class CustomersPanel extends javax.swing.JPanel {
                 Object[] row = new Object[4];
                 row[0] = rs.getString("id_customer");
                 row[1] = rs.getString("name");
-                row[2] = rs.getString("rom");
+                row[2] = rs.getString("room");
                 row[3] = rs.getLong("number");
                 tableModel.addRow(row);
             }
             
-            sql = "UPDATE rom SET status = IF(EXISTS(SELECT * FROM Customers WHERE rom = ?), 'hết', 'còn')  WHERE id = ?";
+            sql = "UPDATE rooms SET status = IF(EXISTS(SELECT * FROM Customers WHERE room = ?), 'hết', 'còn')  WHERE id_room = ?";
             pstmt = con.prepareStatement(sql);
             pstmt.setString(1, idRoom);
             pstmt.setString(2, idRoom);

@@ -19,18 +19,18 @@ import javax.swing.JOptionPane;
  *
  * @author PC
  */
-public class RomsPanel extends javax.swing.JPanel {
+public class RoomsPanel extends javax.swing.JPanel {
 
     /**
-     * Creates new form Roms
+     * Creates new form Rooms
      */
     Connection con = null;
     Statement stmt = null;
     private final DefaultTableModel tableModel;
-    public RomsPanel() throws ClassNotFoundException, SQLException {
+    public RoomsPanel() throws ClassNotFoundException, SQLException {
         initComponents();
         Class.forName("com.mysql.jdbc.Driver");
-        String url = "jdbc:mysql://localhost:3306/boardinghousemanager?useSSL=false";
+        String url = "jdbc:mysql://localhost:3306/javaBaitapNhom?useSSL=false";
         con = DriverManager.getConnection(url,"root","140903");
         stmt = con.createStatement();
         tableModel = (DefaultTableModel) jTable1.getModel();
@@ -76,20 +76,20 @@ public class RomsPanel extends javax.swing.JPanel {
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
             },
             new String [] {
-                "Mã phòng", "Số giường", "Tiền phòng", "Tiện ích", "Trạng thái"
+                "Mã phòng", "Số giường", "Tiền phòng", "Tiện ích", "Trạng thái", "Số lượng khách"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.Byte.class, java.lang.Double.class, java.lang.String.class, java.lang.String.class
+                java.lang.String.class, java.lang.Byte.class, java.lang.Double.class, java.lang.String.class, java.lang.String.class, java.lang.Object.class
             };
             boolean[] canEdit = new boolean [] {
-                false, true, true, true, true
+                false, true, true, true, true, true
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -307,7 +307,7 @@ public class RomsPanel extends javax.swing.JPanel {
 
         // Cập nhật giá trị trong database
         try {
-            String sql = "UPDATE rom SET quantityBed=?, price =? , utilities=?, status =?  WHERE id=?";
+            String sql = "UPDATE rooms SET quantityBed=?, price =? , utilities=?, status =?  WHERE id_room=?";
             PreparedStatement statement = con.prepareStatement(sql);
             statement.setString(1, quantityBed);
             statement.setString(2, price);
@@ -320,7 +320,7 @@ public class RomsPanel extends javax.swing.JPanel {
             } else {
                 JOptionPane.showMessageDialog(this, "Không tìm thấy sản phẩm có id = " + id);
             }
-            sql = "SELECT * FROM Rom";
+            sql = "SELECT * FROM rooms";
             PreparedStatement pstmt = con.prepareStatement(sql);
             ResultSet rs = pstmt.executeQuery();
 
@@ -328,12 +328,13 @@ public class RomsPanel extends javax.swing.JPanel {
             tableModel.setRowCount(0);
 
             while (rs.next()) {
-                Object[] row = new Object[5];
-                row[0] = rs.getString("id");
+                Object[] row = new Object[6];
+                row[0] = rs.getString("id_room");
                 row[1] = rs.getInt("quantitybed");
                 row[2] = rs.getDouble("price");
                 row[3] = rs.getString("utilities");
                 row[4] = rs.getString("status");
+                row[5] = rs.getInt("quantityCustomers");
                 tableModel.addRow(row);
             }
         } catch (SQLException ex) {
@@ -348,9 +349,9 @@ public class RomsPanel extends javax.swing.JPanel {
             jpnAdd.setVisible(false);
             String sql = null;
             if (fieldVal.getText().isBlank()) {
-                sql = "SELECT * FROM Rom";
+                sql = "SELECT * FROM rooms";
             } else {
-                sql = "SELECT * FROM Rom WHERE id=?";
+                sql = "SELECT * FROM rooms WHERE id_room=?";
             }
 
             PreparedStatement pstmt = con.prepareStatement(sql);
@@ -364,16 +365,35 @@ public class RomsPanel extends javax.swing.JPanel {
             tableModel.setRowCount(0);
 
             while (rs.next()) {
-                Object[] row = new Object[5];
-                row[0] = rs.getString("id");
+                
+                
+                String idRoom = rs.getString("id_room");
+                String updateSql = "UPDATE rooms " +
+                   "SET status = IF(NOT EXISTS(SELECT * FROM customers WHERE room = ?), 'Còn', " +
+                   "               IF((SELECT MAX(endDate) FROM customers WHERE room = ? AND endDate IS NOT NULL) <= NOW(), 'Còn', 'Hết')) " +
+                   "WHERE id_room = ?";
+                
+                System.out.println(idRoom);
+                
+                PreparedStatement updatePstmt = con.prepareStatement(updateSql);
+                updatePstmt.setString(1, idRoom);
+                updatePstmt.setString(2, idRoom);
+                updatePstmt.setString(3, idRoom);
+                updatePstmt.executeUpdate();
+                
+                
+                Object[] row = new Object[6];
+                row[0] = rs.getString("id_room");
                 row[1] = rs.getInt("quantitybed");
                 row[2] = rs.getDouble("price");
                 row[3] = rs.getString("utilities");
                 row[4] = rs.getString("status");
+                row[5] = rs.getInt("quantityCustomers");
                 tableModel.addRow(row);
+                
             }
         } catch (SQLException ex) {
-            Logger.getLogger(RomsPanel.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(RoomsPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -386,7 +406,7 @@ public class RomsPanel extends javax.swing.JPanel {
         // TODO add your handling code here:
         try {
             
-            String sql = "INSERT INTO rom (id, quantityBed, price, utilities, status) VALUES (?,?,?,?,?)";
+            String sql = "INSERT INTO rooms (id_room, quantityBed, price, utilities, status) VALUES (?,?,?,?,?)";
             String id = addId.getText().toString();
             String quantityBed = addQuantityBed.getSelectedItem().toString();
             String price = addPrice.getText().toString();
@@ -405,7 +425,7 @@ public class RomsPanel extends javax.swing.JPanel {
             } else {
                 JOptionPane.showMessageDialog(this, "Thêm phòng thất bại!");
             }
-            sql = "SELECT * FROM Rom";
+            sql = "SELECT * FROM rooms";
             PreparedStatement pstmt = con.prepareStatement(sql);
             ResultSet rs = pstmt.executeQuery();
 
@@ -413,12 +433,13 @@ public class RomsPanel extends javax.swing.JPanel {
             tableModel.setRowCount(0);
 
             while (rs.next()) {
-                Object[] row = new Object[5];
-                row[0] = rs.getString("id");
+                Object[] row = new Object[6];
+                row[0] = rs.getString("id_room");
                 row[1] = rs.getInt("quantitybed");
                 row[2] = rs.getDouble("price");
                 row[3] = rs.getString("utilities");
                 row[4] = rs.getString("status");
+                row[5] = rs.getInt("quantityCustomers");
                 tableModel.addRow(row);
             }
         } catch (SQLException ex) {
@@ -441,7 +462,7 @@ public class RomsPanel extends javax.swing.JPanel {
         
         try {
             
-            String sql = "DELETE FROM rom where id =?";
+            String sql = "DELETE FROM rooms where id_room =?";
             
             PreparedStatement statement = con.prepareStatement(sql);
             statement.setString(1, id);
@@ -451,7 +472,7 @@ public class RomsPanel extends javax.swing.JPanel {
             } else {
                 JOptionPane.showMessageDialog(this, "Xóa phòng thất bại!");
             }
-            sql = "SELECT * FROM Rom";
+            sql = "SELECT * FROM rooms";
             PreparedStatement pstmt = con.prepareStatement(sql);
             ResultSet rs = pstmt.executeQuery();
 
@@ -459,12 +480,13 @@ public class RomsPanel extends javax.swing.JPanel {
             tableModel.setRowCount(0);
 
             while (rs.next()) {
-                Object[] row = new Object[5];
-                row[0] = rs.getString("id");
+                Object[] row = new Object[6];
+                row[0] = rs.getString("id_room");
                 row[1] = rs.getInt("quantitybed");
                 row[2] = rs.getDouble("price");
                 row[3] = rs.getString("utilities");
                 row[4] = rs.getString("status");
+                row[5] = rs.getInt("quantityCustomers");
                 tableModel.addRow(row);
             }
         } catch (SQLException ex) {

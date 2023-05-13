@@ -6,7 +6,7 @@ package controllers;
 
 import beanBHM.listBean;
 import view.CustomersPanel;
-import view.RomsPanel;
+import view.RoomsPanel;
 import view.StatisticalPanel;
 import view.TransactionPanel;
 import java.awt.BorderLayout;
@@ -35,13 +35,13 @@ public class forwardController {
     }
     
     public void setView(JPanel jpnItem, JLabel jlbItem) throws ClassNotFoundException, SQLException{
-        kindSelected = "Rom";
+        kindSelected = "Room";
         jpnItem.setBackground( new Color(242,242,242));
         jlbItem.setBackground( new Color(242,242,242));
                 
         root.removeAll();
         root.setLayout(new BorderLayout());
-        root.add(new RomsPanel());
+        root.add(new RoomsPanel());
         root.validate();
         root.repaint();
     }
@@ -73,58 +73,41 @@ public class forwardController {
         
         @Override
         public void mouseClicked(MouseEvent e) {
-            switch(kind){
+            try {
+                switch(kind){
                 case "Statistical":
                 {
+                
                     node = new StatisticalPanel();
                     break;
                 }
                 case "Transaction":
                 {
-                try {
                     node = new TransactionPanel();
-                } catch (ClassNotFoundException ex) {
-                    Logger.getLogger(forwardController.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (SQLException ex) {
-                    Logger.getLogger(forwardController.class.getName()).log(Level.SEVERE, null, ex);
-                }
                     break;
                 }
                 case "Customer":
                 {
-                try {
                     node = new CustomersPanel();
-                } catch (ClassNotFoundException ex) {
-                    Logger.getLogger(forwardController.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (SQLException ex) {
-                    Logger.getLogger(forwardController.class.getName()).log(Level.SEVERE, null, ex);
-                }
                     break;
                 }
-                case "Rom":
+                case "Room":
                 {
-                try {
-                    node = new RomsPanel();
-                } catch (ClassNotFoundException ex) {
-                    Logger.getLogger(forwardController.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (SQLException ex) {
-                    Logger.getLogger(forwardController.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                    node = new RoomsPanel();
                     break;
                 }
                 default: 
                 {
-                    try {
-                        node = new RomsPanel();
-                    } catch (ClassNotFoundException ex) {
-                        Logger.getLogger(forwardController.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (SQLException ex) {
-                        Logger.getLogger(forwardController.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                    node = new RoomsPanel();
                 }
                     break;
 
             }
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(forwardController.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(forwardController.class.getName()).log(Level.SEVERE, null, ex);
+        }
             root.removeAll();
             root.setLayout(new BorderLayout());
             root.add(node);

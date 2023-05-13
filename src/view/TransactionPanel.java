@@ -30,21 +30,21 @@ public class TransactionPanel extends javax.swing.JPanel {
     public TransactionPanel() throws ClassNotFoundException, SQLException {
         initComponents();
         Class.forName("com.mysql.jdbc.Driver");
-        String url = "jdbc:mysql://localhost:3306/boardinghousemanager?useSSL=false";
+        String url = "jdbc:mysql://localhost:3306/javaBaitapNhom?useSSL=false";
         con = DriverManager.getConnection(url, "root", "140903");
         stmt =  con.createStatement();
         tableModel = (DefaultTableModel) jTable1.getModel();
         jpnAdd.setVisible(false);
         
-        String sql = "SELECT id FROM rom ";
+        String sql = "SELECT id_room FROM rooms ";
         PreparedStatement pstmt = con.prepareStatement(sql);
             
         ResultSet rs = pstmt.executeQuery();
 
             // clear table before adding rows
         while (rs.next()) {
-            String rom = rs.getString("id");
-            jtfRoom.addItem(rom);
+            String room = rs.getString("id_room");
+            jtfRoom.addItem(room);
         }
     }
 
@@ -277,14 +277,14 @@ public class TransactionPanel extends javax.swing.JPanel {
             while (rs.next()) {
                 Object[] row = new Object[5];
                 row[0] = rs.getString("id_transaction");
-                row[1] = rs.getString("id_rom");
+                row[1] = rs.getString("id_room");
                 row[2] = rs.getDouble("amountPaid");
                 row[3] = rs.getDouble("amountOwed");
                 row[4] = rs.getString("paymentDate");
                 tableModel.addRow(row);
             }
         } catch (SQLException ex) {
-            java.util.logging.Logger.getLogger(RomsPanel.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(RoomsPanel.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jButton3ActionPerformed
 
@@ -296,80 +296,68 @@ public class TransactionPanel extends javax.swing.JPanel {
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         // TODO add your handling code here:
-        try{
-            String rom = (String) jtfRoom.getSelectedItem();
+        try {
+            // Lấy dữ liệu từ các trường nhập liệu
+            String room = (String) jtfRoom.getSelectedItem();
             String amount = jtfPrice.getText();
             String date = jtfDate.getText();
-            
-            
-            String sql = "SELECT amountOwed FROM transaction WHERE id_rom = ? ORDER BY paymentDate DESC LIMIT 1";
+
+            // Lấy số tiền còn nợ của phòng từ cơ sở dữ liệu
+            String sql = "SELECT amountOwed FROM transaction WHERE id_room = ? ORDER BY paymentDate DESC LIMIT 1";
             PreparedStatement pstmt = con.prepareStatement(sql);
-            pstmt.setString(1, rom);
+            pstmt.setString(1, room);
             ResultSet rs = pstmt.executeQuery();
 
-            // Kiểm tra kết quả trả về từ câu truy vấn
+            // Lấy giá tiền phòng nếu không tìm thấy số tiền nợ
             String price = "";
             if (rs.next()) {
-                // Nếu có giá trị thì lấy giá trị của cột no
                 price = rs.getString("amountOwed");
-
             } else {
-                String sql2 = "SELECT price FROM rom where id =?";
+                String sql2 = "SELECT price FROM rooms where id_room =?";
                 pstmt = con.prepareStatement(sql2);
-                pstmt.setString(1, rom);
-            
+                pstmt.setString(1, room);
                 rs = pstmt.executeQuery();
                 if (rs.next()) {
                     price = rs.getString("price");
-                
                 }
             }
-            
-            sql = "INSERT INTO Transaction (id_rom, amountPaid, amountOwed, paymentDate) Value (?,?,?,?)";
-            
+
+            // Thêm giao dịch vào cơ sở dữ liệu
+            sql = "INSERT INTO Transaction (id_room, amountPaid, amountOwed, paymentDate) Value (?,?,?,?)";
             pstmt = con.prepareStatement(sql);
-            
-            double amountOwed = Double.parseDouble(price) - Double.parseDouble(amount ) ;
-            
+            double amountOwed = Double.parseDouble(price) - Double.parseDouble(amount);
             Double obj = Double.valueOf(amountOwed);
             String owed = obj.toString();
-                    
-            pstmt.setString(1, rom);
+            pstmt.setString(1, room);
             pstmt.setString(2, amount);
             pstmt.setString(3, owed);
             pstmt.setString(4, date);
-            
             int rowsUpdated = pstmt.executeUpdate();
+
+            // Hiển thị thông báo và cập nhật bảng dữ liệu
             if (rowsUpdated > 0) {
                 JOptionPane.showMessageDialog(this, "Thêm giao dịch thành công!");
             } else {
                 JOptionPane.showMessageDialog(this, "Thêm giao dịch thất bại!");
             }
-            
-            
-            
             sql = "SELECT * FROM Transaction";
             pstmt = con.prepareStatement(sql);
-            
             rs = pstmt.executeQuery();
-
-            // clear table before adding rows
             tableModel.setRowCount(0);
-
-             while (rs.next()) {
+            while (rs.next()) {
                 Object[] row = new Object[5];
                 row[0] = rs.getString("id_transaction");
-                row[1] = rs.getString("id_rom");
+                row[1] = rs.getString("id_room");
                 row[2] = rs.getDouble("amountPaid");
                 row[3] = rs.getDouble("amountOwed");
                 row[4] = rs.getString("paymentDate");
                 tableModel.addRow(row);
             }
-            
-        } catch(SQLException ex){
-            java.util.logging.Logger.getLogger(RomsPanel.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-
+        } catch (SQLException ex) {
+            // Xử lý lỗi
+            java.util.logging.Logger.getLogger(RoomsPanel.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+
     }//GEN-LAST:event_jButton4ActionPerformed
 
 

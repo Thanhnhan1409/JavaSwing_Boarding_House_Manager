@@ -22,11 +22,11 @@ public class StatisticalPanel extends javax.swing.JPanel {
     public StatisticalPanel() throws ClassNotFoundException, SQLException {
         initComponents();
         Class.forName("com.mysql.jdbc.Driver");
-        String url = "jdbc:mysql://localhost:3306/boardinghousemanager?useSSL=false";
+        String url = "jdbc:mysql://localhost:3306/javaBaitapNhom?useSSL=false";
         con = DriverManager.getConnection(url, "root", "140903");
         stmt =  con.createStatement();
         
-        String sql = "SELECT COUNT(id) FROM rom";
+        String sql = "SELECT COUNT(id_room) FROM rooms";
         PreparedStatement pstmt = con.prepareStatement(sql);
         
         ResultSet rs = pstmt.executeQuery();
@@ -37,7 +37,7 @@ public class StatisticalPanel extends javax.swing.JPanel {
         }
         jlbRoomTotal.setText(String.valueOf(countRoom));
         
-        sql = "SELECT COUNT(*) FROM rom where status ='hết'";
+        sql = "SELECT COUNT(*) FROM rooms where status ='hết'";
         pstmt = con.prepareStatement(sql);
         
         rs = pstmt.executeQuery();
@@ -92,7 +92,7 @@ public class StatisticalPanel extends javax.swing.JPanel {
                 "WHERE paymentDate = (\n" +
                 "  SELECT MAX(paymentDate)\n" +
                 "  FROM transaction t2\n" +
-                "  WHERE t1.id_rom = t2.id_rom\n" +
+                "  WHERE t1.id_room = t2.id_room\n" +
                 ")";
 
         // Tạo một PreparedStatement để thực hiện câu truy vấn

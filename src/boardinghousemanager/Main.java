@@ -4,6 +4,7 @@
  */
 package boardinghousemanager;
 
+import java.sql.SQLException;
 import view.MainJFrame;
 
 /**
@@ -11,7 +12,7 @@ import view.MainJFrame;
  * @author PC
  */
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ClassNotFoundException, SQLException {
         new MainJFrame().setVisible(true);
     }
     
